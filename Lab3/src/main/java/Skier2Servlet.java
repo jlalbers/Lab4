@@ -1,11 +1,12 @@
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @WebServlet(name = "Skier2Servlet", value = "/Skier2Servlet")
 public class Skier2Servlet extends HttpServlet {
@@ -17,9 +18,9 @@ public class Skier2Servlet extends HttpServlet {
         res.setContentType("application/json");
         String urlPath = req.getPathInfo();
 
-        SkierData skierData = new SkierData();
+        Skier2Servlet.Resorts bean = new Resorts();
         Gson gson = new Gson();
-        String skierDataJsonString = gson.toJson(skierData);
+        String jsonData = gson.toJson(bean);
 
         // check we have a URL!
         if (urlPath == null || urlPath.isEmpty()) {
@@ -36,15 +37,10 @@ public class Skier2Servlet extends HttpServlet {
         } else {
             if(urlParts.length == 8){
                 res.setStatus(HttpServletResponse.SC_OK);
-                res.getWriter().write(skierDataJsonString);
+                res.getWriter().write(gson.toJson(5));
             }else {
                 res.setStatus(HttpServletResponse.SC_OK);
-                JsonObject json = new JsonObject();
-
-                // put some value pairs into the JSON object .
-                json.addProperty("seasonID", 5236);
-                json.addProperty("totalVert", 0);
-                res.getWriter().write(json.toString());
+                res.getWriter().write(jsonData);
             }
         }
     }
@@ -105,5 +101,21 @@ public class Skier2Servlet extends HttpServlet {
             return false;
         }
         return true;
+    }
+
+    public class Resorts {
+
+        private List<Skier2Servlet.Resorts.InnerBean> resorts;
+
+        class InnerBean
+        {
+            private String seasonID = "string";
+            private int totalVert = 0;
+
+        }
+        public Resorts() {
+            resorts = new ArrayList<>();
+            resorts.add(new Skier2Servlet.Resorts.InnerBean());
+        }
     }
 }
