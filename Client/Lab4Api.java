@@ -16,14 +16,14 @@ public class Lab4Api {
         public int startTime;
         public int skierIDStart;
         public double runTimeIdx;
-        public double percentageOfThread;
+        public int numOfThread;
         String phase;
 
-        public Info(int startTime, int skierIDStart, double runTimeIdx, double percentageOfThread, String phase) {
+        public Info(int startTime, int skierIDStart, double runTimeIdx, int numOfThread, String phase) {
             this.startTime = startTime;
             this.skierIDStart = skierIDStart;
             this.runTimeIdx = runTimeIdx;
-            this.percentageOfThread = percentageOfThread;
+            this.numOfThread = numOfThread;
             this.phase = phase;
         }
     }
@@ -43,8 +43,8 @@ public class Lab4Api {
 
 
     synchronized public  void incCall(SkiersApi apiInstance, ApiClient client, Info info) {
-        int numOfThread = (int)(NUMTHREADS * info.percentageOfThread);
-        int skierPerThread = NUMSKIERS / numOfThread;
+
+        int skierPerThread = NUMSKIERS / info.numOfThread;
         int currSkierStart = info.skierIDStart;
         info.skierIDStart += skierPerThread;
 
@@ -74,10 +74,8 @@ public class Lab4Api {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         long start = System.currentTimeMillis();
-
-
-        //phase 1
-        System.out.println("Phase One Started");
+        
+        
         Lab4Api lab4Api = new Lab4Api();
 
             try {
@@ -88,20 +86,22 @@ public class Lab4Api {
                 throw new ExceptionInInitializerError(e.getMessage());
             }
 
+        int numOfThreadOne = (int) (NUMTHREADS * 0.25);
+        int numOfThreadTwo = (int) (NUMTHREADS * 1d);
+        int numOfThreadThree = (int) (NUMTHREADS * 0.1);
 
-        Info infoPhaseOne = new Info(0, 0, 0.2, 0.25, "PhaseOne");
-        Info infoPhaseTwo = new Info(91, 0, 0.6, 1d, "PhaseTwo");
-        Info infoPhaseThree = new Info(361, 0, 0.1, 0.1, "PhaseThree");
+        Info infoPhaseOne = new Info(0, 0, 0.2, numOfThreadOne, "PhaseOne");
+        Info infoPhaseTwo = new Info(91, 0, 0.6, numOfThreadTwo, "PhaseTwo");
+        Info infoPhaseThree = new Info(361, 0, 0.1, numOfThreadThree, "PhaseThree");
 
-        int numOfThreadOne = (int) (NUMTHREADS * infoPhaseOne.percentageOfThread);
-        int numOfThreadTwo = (int) (NUMTHREADS * infoPhaseTwo.percentageOfThread);
-        int numOfThreadThree = (int) (NUMTHREADS * infoPhaseThree.percentageOfThread);;
+        
 
         CountDownLatch completedOne = new CountDownLatch((int) Math.ceil(numOfThreadOne * 0.2));
         CountDownLatch completedTwo = new CountDownLatch((int) Math.ceil(numOfThreadTwo * 0.2));
         CountDownLatch completedTotal = new CountDownLatch(numOfThreadThree + numOfThreadTwo + numOfThreadOne);
 
         //Phase 1
+        System.out.println("Phase One Started");
         System.out.println("Phase 1 time is " + System.currentTimeMillis());
 
         for (int i = 0; i < numOfThreadOne; i++) {
